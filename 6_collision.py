@@ -31,6 +31,15 @@ to_y = 0
 # 이동 속도
 character_speed = 0.6
 #이벤트 루프
+
+# 적 enemy 
+enemy = pygame.image.load("/users/youngbinha/desktop/python/pygame/enemy.png")
+enemy_size = enemy.get_rect().size #이미지의 크기를 구해옴
+enemy_width = enemy_size[0] # 캐릭터의 가로 크기
+enemy_height = enemy_size[1] #캐릭터의 세로 크기
+enemy_x_pos = (screen_width / 2) - (enemy_width/2) # 화면 가로의 절반 크기
+enemy_y_pos = (screen_height / 2) - (enemy_height / 2)# 화면 세로 크기 가장 아래에 해당하는 곳에 위치(세로)
+
 running = True #게임이 진행중인가 ? 
 while running:
     dt = clock.tick(60) # 게임화면의 초당 프레임 수를 설정
@@ -68,11 +77,13 @@ while running:
         character_y_pos = 0
     elif character_y_pos > screen_height - character_height:
         character_y_pos = screen_height - character_height
+
+    # 충돌 처리
+    character_rect = character.get_rect()
     #screen.fill((0, 0, 255))
     screen.blit(background, (0, 0)) #배경 그리기
-
     screen.blit(character, (character_x_pos, character_y_pos)) # 캐릭터 그리기
-
+    screen.blit(enemy, (enemy_x_pos, enemy_y_pos)) # 적 그리기
 
     pygame.display.update() # 게임화면을 다시 그리기!
 
