@@ -1,4 +1,4 @@
-import pygame
+import pygame, random
 
 
 ##########################################################
@@ -19,9 +19,28 @@ clock = pygame.time.Clock()
 ##########################################################
 
 # 1. 사용자 게임 초기화(배경 화면, 게임 이미지, 좌표, 속도, 폰트 등)
+background = pygame.image.load("/users/youngbinha/desktop/python/pygame/background.jpg")
 
+character = pygame.image.load("/users/youngbinha/desktop/python/pygame/human.jpg")
+character_size = character.get_rect().size
+character_width = character_size[0]
+character_height = character_size[1]
+character_x_pos = (screen_width / 2) - (character_width/2)
+character_y_pos = screen_height - character_height
 
+to_x = 0
+to_y = 0
 
+enemy = pygame.image.load("/users/youngbinha/desktop/python/pygame/poop.jpg")
+enemy_size = enemy.get_rect().size
+enemy_width = enemy_size[0]
+enemy_height = enemy_size[1]
+enemy_x_pos = random.randint(0, (screen_width - enemy_width))
+enemy_y_pos = 0 - enemy_height
+
+character_speed = 0.6
+
+falling_speed = 10
 running = True #게임이 진행중인가 ? 
 while running:
     dt = clock.tick(60)
@@ -31,11 +50,51 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_LEFT:
+                to_x -= character_speed
+            elif event.key == pygame.K_RIGHT:
+                to_x += character_speed
+
+        if event.type == pygame.KEYUP:
+            if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
+                to_x = 0
+
+    character_x_pos += to_x * dt
+
     # 3. 게임 캐릭터 위치 정의
+    if character_x_pos < 0:
+        character_x_pos = 0
+    elif character_x_pos > screen_width - character_width:
+        character_x_pos = screen_width - character_width
 
-    # 4. 충돌 처리
+    # 적이 내려오게 하기
+    falling_speed += 0.01
+    print(falling_speed)
+    enemy_y_pos +=  falling_speed
+    if enemy_y_pos > 640:
+        enemy_y_pos = 0
+        enemy_x_pos = random.randint(0, (screen_width - enemy_width))
 
-    # 5. 화면에 그리
+    # 충돌 처리 rect 정보 업데이트
+    character_rect = character.get_rect()
+    character_rect.left = character_x_pos
+    character_rect.top = character_y_pos
+
+    enemy_rect = enemy.get_rect()
+    enemy_rect.left = enemy_x_pos
+    enemy_rect.top = enemy_y_pos
+
+    # 충돌 체크
+    if character_rect.colliderect(enemy_rect):
+        running = False
+
+    # 화면에 그리기
+    screen.blit(background, (0,0))
+    screen.blit(character, (character_x_pos, character_y_pos))
+    screen.blit(enemy, (enemy_x_pos, enemy_y_pos))
+
+
     pygame.display.update() # 게임화면을 다시 그리기!
 
 # 잠시 대기
