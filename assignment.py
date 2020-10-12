@@ -38,9 +38,12 @@ enemy_height = enemy_size[1]
 enemy_x_pos = random.randint(0, (screen_width - enemy_width))
 enemy_y_pos = 0 - enemy_height
 
+game_font = pygame.font.Font(None, 40) #  Font(font, size)
+
 character_speed = 0.6
 
 falling_speed = 10
+life = 3
 running = True #게임이 진행중인가 ? 
 while running:
     dt = clock.tick(60)
@@ -85,15 +88,22 @@ while running:
     enemy_rect.left = enemy_x_pos
     enemy_rect.top = enemy_y_pos
 
+    life_count = game_font.render(str(int(life)), True, (255,255,255))
+    end_script = game_font.render(str("You got shit"), True, (255,0,0))
     # 충돌 체크
     if character_rect.colliderect(enemy_rect):
-        running = False
+        screen.blit(end_script, ((screen_width/2)-(enemy_width/2),(screen_height/2)-(enemy_height / 2)))
+        if life == 0:
+            running = False
+        else:
+            enemy_y_pos=0
+            life -= 1
 
     # 화면에 그리기
     screen.blit(background, (0,0))
     screen.blit(character, (character_x_pos, character_y_pos))
     screen.blit(enemy, (enemy_x_pos, enemy_y_pos))
-
+    screen.blit(life_count, (10,10))
 
     pygame.display.update() # 게임화면을 다시 그리기!
 
